@@ -1,0 +1,25 @@
+<!--
+    Dynamic home page for studios. 
+
+    Currently This page just acts as an information page.
+-->
+
+{% extends "studio_suite/base.html" %}
+{% block content %}
+
+<h1>{{ studio.name }}: StudioSuite</h1>
+<p>{{studio.bio}}</p>
+
+<h2>Getting Clients</h2>
+<p>
+    Your Signup route:
+    <a href='https://handleit.app/accounts/member-signup/{{studio_url_extension}}/'>
+        https://handleit.app/accounts/member-signup/{{studio_url_extension}}/
+    </a><br>
+    Your Login route:
+    <a href='https://handleit.app/accounts/login-portal/{{studio_url_extension}}/'>
+        https://handleit.app/accounts/login-portal/{{studio_url_extension}}/
+    </a><br>
+</p>
+
+{% endblock %}

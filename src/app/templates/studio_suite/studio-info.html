@@ -1,0 +1,13 @@
+<!-- Display the form for retrieving studio information. -->
+{% extends "account/base.html" %}
+{% block content %}
+
+<h1>Take your studio public: </h1>
+    
+<form method="post">
+    {% csrf_token %}
+    {{ StudioInfoForm.as_p }}
+    <button type="submit">Submit</button>
+</form>
+
+{% endblock %}

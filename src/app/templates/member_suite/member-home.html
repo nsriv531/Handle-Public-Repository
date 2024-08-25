@@ -1,0 +1,31 @@
+<!-- Dynamic home page for members to later interact with studios. -->
+{% extends "member_suite/base.html" %}
+{% block content %}
+<!-- <div>
+    <strong>Menu:</strong>
+    <ul>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+            <li><a href="{% url 'member_home' studio_url_extension=studio_url_extension %}">Member Home</a></li>
+        {% endif %}
+        {% if is_owner %}
+            <li><a href="{% url 'studio_home' studio_url_extension=studio_url_extension %}">Studio Home</a></li>
+        {% endif %}
+    </ul>
+</div> -->
+
+<h1>MemberSuite: {{studio.name}}</h1>
+<!-- Display all studios the member is associated with. -->
+<!-- Temporary. -->
+<div class="container">
+    <h2>Studios You're A Member Of: </h2>
+    <ul>
+        {% for relationships in user_studios %}
+            <li>
+                <p><strong>{{ relationships.studio.name }}</strong></p>
+                <p>{{ relationships.studio.bio }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

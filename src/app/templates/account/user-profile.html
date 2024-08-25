@@ -1,0 +1,47 @@
+{% extends "account/base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+</head>
+<ul><li><a href="{% url 'studio_info' %}">Create A Studio</a></li></ul>
+<body>
+    <h1>Update Profile</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Changes</button>
+    </form>
+</body>
+</html>
+<p><a href="{% url 'account_reset_password' %}">Reset Password</a></p>
+<p><a href="{% url 'account_email' %}">Reset Email</a></p>
+
+<!-- Display all studios the member is associated with. -->
+<div class="container">
+    <h1>Studios You're A Member Of: </h1>
+    <ul>
+        {% for relationship in member_studios %}
+            <li>
+                <a href="{% url 'login_portal' studio_url_extension=relationship.studio.url_extension %}">{{ relationship.studio }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- Display all studios the member is associated with. -->
+<div class="container">
+    <h1>Your Studios: </h1>
+    <ul>
+        {% for relationship in owner_studios %}
+            <li>
+                <p><strong><a href="{% url 'member_home' studio_url_extension=relationship.url_extension %}">{{ relationship }}</a></p></strong>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

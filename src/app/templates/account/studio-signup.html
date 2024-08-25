@@ -1,0 +1,12 @@
+<!-- Unique signup page for studio's to create accounts. -->
+{% extends "account/base.html" %}
+
+{% block content %}
+  <h2>Studio Sign Up</h2>
+  <form method="post" action="{% url 'studio_signup' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Sign Up</button>
+  </form>
+  <p>If you already have a handle account, login to your <a href="{% url 'account_login' %}">profile</a> to create a studio.</p>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% load static socialaccount django_vite %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+
+    <title>{% block title %}{% endblock %}</title>
+
+
+    {% block extra_head %}
+        <meta name="csrf-token" content="{{ csrf_token }}">
+        {% vite_hmr_client %}
+        {% vite_react_refresh %}
+        {% vite_asset 'js/app.js' %}
+    {% endblock %}
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_tag }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-2T1CG17NFL');
+    </script>
+
+    <link rel="icon" href="{% static 'images/cb-favicon32x32.png' %}">
+</head>
+<body>
+<div class="main-content">
+    <header></header>
+
+    <main>
+        {% block messages %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endblock %}
+        {% block content %}
+
+        {% endblock %}
+    </main>
+</div>
+<footer>
+</footer>
+{% block extra_body %}{% endblock %}
+{% block extra_js %}{% endblock %}
+</body>
+</html>

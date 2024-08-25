@@ -1,0 +1,46 @@
+<!-- Base remplate for account URL's. -->
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block head_title %}{% endblock head_title %}</title>
+    {% block extra_head %}
+    {% endblock extra_head %}
+  </head>
+  <body>
+    {% block body %}
+
+    {% if messages %}
+    <div>
+      <strong>{% trans "Messages:" %}</strong>
+      <ul>
+        {% for message in messages %}
+        <li>{{message}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <!-- Determine which menu route is appropriate. -->
+    <div>
+      <strong>Menu</strong>
+      <ul>
+        <li><a href="{% url 'index' %}">Handle</a></li>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'user_profile' %}">Profile</a></li>
+        <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+        {% else %}
+        <li><a href="{% url 'account_login' %}">Profile Login</a></li>
+        <li><a href="{% url 'studio_signup' %}">Create A Studio</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    {% block content %}
+    {% endblock content %}
+    {% endblock body %}
+    {% block extra_body %}
+    {% endblock extra_body %}
+  </body>
+</html>

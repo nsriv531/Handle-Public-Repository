@@ -1,0 +1,26 @@
+<!-- Display the form for retrieving studio information. -->
+{% extends "studio_suite/base.html" %}
+{% block content %}
+
+<h1>{{ studio.name }}: StudioSuite</h1>
+<p>{{studio.bio}}</p>
+
+<h1>Modify Your Studio Information: </h1>
+
+<!--
+    Note for frontend:
+        These fields can be safely updated independantly.
+        If you want to make it so they can click on the name to edit it or something,
+        just submit the other fields empty. The backend won't write over the other
+        fields with empty values. If data is entered, it will be checked for validity
+        as normal.
+
+        TODO: Delete this note before production.
+-->
+<form method="post">
+    {% csrf_token %}
+    {{ StudioUpdateForm.as_p }}
+    <button type="submit">Submit</button>
+</form>
+
+{% endblock %}

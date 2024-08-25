@@ -1,0 +1,82 @@
+# .gitignore
+local_settings.py
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.pot
+*.egg-info/
+dist/
+build/
+venv/
+*.egg
+*.so
+*.swp
+*__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Django
+*.sqlite3
+*.db
+*.db-journal
+media/
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+
+# React
+node_modules/
+/build/
+.npm/
+.yarn/
+yarn.lock
+.env
+.env.local
+.env.production
+.env.test
+.env.stripe_cli
+.env.*
+
+# Operating systems
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Miscellaneous
+*.sqlite3
+*.bak
+*.cache
+*.gz
+*.orig
+*.rej
+*.retry
+*.swo
+*.swp
+*.tmp
+*.DS_Store
+*.class
+*.jar
+*.war
+*.ear
+*.msi
+*.exe
+*.app
+/conf/uwsgi.pid
+/conf/uwsgi.touch
+/static
+/src/static
+.docker
+dump.rdb
+src/package-lock.json

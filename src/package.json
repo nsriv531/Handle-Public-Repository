@@ -1,0 +1,28 @@
+{
+  "name": "workshop",
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "standard --fix",
+    "vite-dev": "vite",
+    "vite-build": "vite build",
+    "vite-preview": "vite preview",
+    "bash": "docker compose exec app bash",
+    "shell": "docker compose exec app ./manage.py shell",
+    "collectstatic": "docker compose exec app ./manage.py collectstatic --no-input",
+    "logs": "docker compose logs -f app"
+  },
+  "targets": {
+    "main": false
+  },
+  "dependencies": {
+    "vite": "^4.4.9"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.4",
+    "eslint": "^8.46.0",
+    "eslint-config-standard": "^17.1.0",
+    "process": "^0.11.10",
+    "sass": "^1.64.2",
+    "standard": "^17.1.0"
+  }
+}

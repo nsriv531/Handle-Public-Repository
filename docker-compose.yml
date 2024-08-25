@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+  redis:
+    image:
+      "redis:7-alpine"
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./tmp/redis_data:/var/lib/redis/data
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: "/src/docker-entrypoint.sh"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    env_file:
+      - .env
+      - .env.app
+    volumes:
+      - type: bind
+        source: ${HOME}/src
+        target: /src
+      - type: bind
+        source: ${HOME}/conf
+        target: /conf
+      - type: bind
+        source: ${HOME}/log
+        target: /log
+    ports:
+      - "8091:8000"
+    depends_on:
+      - redis
+  mh-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: "/src/docker-entrypoint-worker.sh"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    env_file:
+      - .env
+      - .env.worker
+    volumes:
+      - type: bind
+        source: ${HOME}/src
+        target: /src
+      - type: bind
+        source: ${HOME}/conf
+        target: /conf
+      - type: bind
+        source: ${HOME}/log
+        target: /log
+    depends_on:
+      - redis

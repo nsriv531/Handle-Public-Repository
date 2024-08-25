@@ -1,0 +1,279 @@
+<!-- Display booking timeslot to studios and form to create a booking timeslot. -->
+{% extends "studio_suite/base.html" %}
+{% block content %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+        /*
+        Notes for front-end:
+        We can just hide or show fields based on what they need to input.
+        Data is cleaned up on the backend before being processed...
+        by giving fields a priority to dictate related date...
+        (eg: recurrence: 2 (Forever) results in the backend deleting end_date).
+        Also placing this script above the form load is best here because the...
+        JS engine is is able to start loading the script first which...
+        should reduce the form jittering when form fields are being hidden.
+
+        **Please delete this comment block when you see it. Thanks, -Kolby**
+        */
+        $(document).ready(function() {
+            // Function to toggle visibility and label based on is_recurring and recurrence_frequency values
+            function toggleFields() {
+                var isRecurringVal = $("select#id_is_recurring").val();
+                var recurrenceFrequencyVal = $("select#id_recurrence_frequency").val();
+    
+                var recurrenceFrequencyField = $("#id_recurrence_frequency");
+                var endDateField = $("#id_end_date");
+                var recurringWeekdaysField = $("#id_recurring_weekdays");
+    
+                var recurrenceFrequencyLabel = $("label[for='id_recurrence_frequency']");
+                var endDateLabel = $("label[for='id_end_date']");
+                var startDateLabel = $("label[for='id_start_date']");
+    
+    
+                if (isRecurringVal === "0") { // Never
+                    recurrenceFrequencyField.hide();
+                    recurrenceFrequencyLabel.hide();
+                    recurringWeekdaysField.hide();
+                    endDateField.hide();
+                    endDateLabel.hide();
+                    startDateLabel.text('Date:');
+                    
+                } else if (isRecurringVal === "1") { // Temporarily
+                    recurrenceFrequencyField.show();
+                    recurrenceFrequencyLabel.show();
+                    endDateField.show();
+                    endDateLabel.show();
+                    startDateLabel.text('Start Date:');
+                    
+                    if (recurrenceFrequencyVal == 'weekly'){
+                        recurringWeekdaysField.show();
+                        recurringDaysOfMonthField.hide()
+                    }
+    
+                } else if (isRecurringVal === "2") { // Forever
+                    recurrenceFrequencyField.show();
+                    recurrenceFrequencyLabel.show();
+                    endDateField.hide();
+                    endDateLabel.hide();
+                    startDateLabel.text('Start Date:');
+    
+                    if (recurrenceFrequencyVal == 'weekly'){
+                        recurringWeekdaysField.show();
+                        recurringDaysOfMonthField.hide()
+                    }
+                }
+            }
+    
+            // Initial state based on the page load
+            toggleFields();
+    
+            // Listen for changes to the is_recurring and recurrence_frequency fields
+            $("select#id_is_recurring, select#id_recurrence_frequency").change(function() {
+                toggleFields();
+            });
+        });
+</script>
+
+<style>
+    /* 
+    CSS Example for alert system.
+    Mulitple warnings can be shown so we should likely use some sort of custom alert.
+    */
+    .warning-message {
+        margin: 20px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .warning-message h3 {
+        color: #721c24;
+    }
+
+    .warning-message p {
+        margin: 0;
+    }
+
+    .dismiss-button {
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+</style>
+{% if is_collision %}
+    <div class="warning-message" id="warningMessage">
+        <div class="alert alert-danger">
+            <h3>Timeslot Collisions Detected For Kiln: {{collisions_detected.0.1.kiln}}</h3>
+
+            <p><strong>Submitted Timeslot:</strong></p>
+            <ul>
+                <li>
+                    {% if submitted_form.is_recurring == 1 or submitted_form.is_recurring == 2 %}
+                        
+                        Start Date: {{submitted_form.start_date}}<br>
+                        End Date: {{submitted_form.end_date}}<br>
+                        Recurring Weekdays:<br>
+                            <ul>
+                                {% for weekday in submitted_form.recurring_weekdays.all %}
+                                    <li>{{ weekday }}</li>
+                                {% endfor %}
+                            </ul>
+                    {% else %}
+                        Date: {{submitted_form.start_date}}<br>
+                    {% endif %}
+                        Load After Time: {{submitted_form.load_after_time}}
+                </li>
+            </ul>
+
+            <p><strong>Collided With Existing Timeslot(s):</strong></p>
+            <ul>
+                {% for collision in collisions_detected %}
+                <li>
+                    Warning Messages:<br>
+                    <ol>
+                    {% for warning_message in collision.0 %}
+                            <li>{{warning_message}}</li>
+                        {% endfor %}
+                    </ol>
+                     <!-- Collision Message -->
+                    {% if collision.1.is_recurring == 1 or collision.1.is_recurring == 2 %} <!-- Collided Timeslot Information -->
+                        Start Date: {{collision.1.start_date}}<br>
+                        End Date: {{collision.1.end_date}}<br>
+                        Recurring Weekdays:
+                        <ul>
+                            {% for weekday in collision.1.recurring_weekdays.all %}
+                                <li>{{weekday}}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        Date: {{collision.1.start_date}}<br>
+                    {% endif %}
+                        Load After Time: {{collision.1.load_after_time}}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!--
+            Since technically infinit alerts could happen, the backend will need
+            to eventually limit the amount before not accepting an override rule.
+            This can be a fairly high limit so for now it's not necessary.
+        -->
+        <button class="dismiss-button" onclick="dismissWarning()">Dismiss</button>
+    </div>
+{% endif %}
+
+<script>
+    function dismissWarning() {
+        const warningMessage = document.getElementById("warningMessage");
+        warningMessage.style.display = "none";
+    }
+</script>
+
+<h2>Create New Timeslot:</h2>
+
+{% if is_kilns %}
+    <form method="post" id="timeslot-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="create_timeslot">Submit</button>
+    </form>
+{% else %}
+    <p> You must create a kiln before creating a timeslot. </p>
+{% endif %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const showFormButtons = document.querySelectorAll(".show-form");
+        showFormButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const formDiv = this.nextElementSibling;
+                formDiv.style.display = formDiv.style.display === "none" ? "block" : "none";
+            });
+        });
+    });
+</script>
+
+<h2>Studio Timeslots:</h2>
+<ul>
+    {% for timeslot in timeslots %}
+    <li>
+        <!-- Display booking details here -->
+        Kiln: {{timeslot.kiln}}<br>
+        {% if timeslot.is_recurring == 0 %}
+        Date: {{ timeslot.start_date }}<br>
+        {% elif timeslot.is_recurring == 1 or timeslot.is_recurring == 2 %}
+            Start Date: {{ timeslot.start_date }}<br>
+            End Date: {{ timeslot.end_date }}<br>
+            Repeats: {{ timeslot.recurrence_frequency }}<br>
+            Occurs on:
+            <ul>
+                {% for day in timeslot.recurring_weekdays.all %}
+                <li>{{ day }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+            Required Role: {{timeslot.min_role_required}}<br>
+            Load After: {{timeslot.load_after_time}}<br>
+        Notes: {{timeslot.notes}}
+
+        <!-- Delete button -->
+        <!--
+            For now, deleting the timeslot delets the associated bookings.
+            The booking model has been developed to take priority over new timeslots by the day,
+            it still needs to be able to take priority for within 24 hours as well. So this is
+            "issue" is temporary.
+        -->
+        <form method="post" action="{% url 'timeslot_management' studio_url_extension=studio_url_extension %}">
+            {% csrf_token %}
+            {{ timeslot.delete_timeslot_form.as_p }}
+            <button type="submit" name="delete_timeslot" onclick="return confirm('Deleting this timeslot will delete all associated bookings?')">Delete Timeslot</button>
+        </form>
+        
+        <!-- DISABLED - DEV NOTE: Front and Back Disabled -->
+        <!-- Button to toggle form visibility -->
+        <!-- <button class="show-form">Create Blackout</button> -->
+
+        <!-- Form (initially hidden)
+        <div class="timeslot-form" style="display: none;">
+            <form method="post" action="{% url 'timeslot_management' studio_url_extension=studio_url_extension %}">
+                {% csrf_token %}
+                <input type="hidden" name="timeslot_id" value="{{ timeslot.id }}">
+                {{ blackout_form.as_p }}
+                <button type="submit" name="create_blackout">Submit Blackout</button>
+            </form>
+        </div> -->
+
+        <!-- <br>Blackouts: -->
+        <!-- Blackouts section --->
+        <!-- {% for blackout in blackouts %}
+            {% if timeslot.id == blackout.related_timeslot.id %}
+                <ul>
+                    <li>
+                        Start: {{ blackout.blackout_start_datetime }}<br>
+                        End: {{ blackout.blackout_end_datetime }}<br>
+                        Reason: {{ blackout.blackout_reason }}<br> -->
+                        <!-- Delete button -->
+                        <!-- <div>
+                            <form method="post" action="{% url 'timeslot_management' studio_url_extension=studio_url_extension %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="blackout_id" value="{{ blackout.id }}">
+                                <button type="submit" name="delete_blackout" onclick="return confirm('Are you sure you want to delete this blackout?')">Delete Blackout</button>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            {% endif %}
+        {% endfor %} -->
+    </li><br>
+    {% empty %}
+    <li>No timeslots found for this studio.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

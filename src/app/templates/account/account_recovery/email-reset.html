@@ -1,0 +1,47 @@
+{% extends "account/base.html" %}
+{% block head_title %}
+    Email Addresses
+{% endblock head_title %}
+{% block content %}
+    <h1>Email Addresses</h1>
+    {% if emailaddresses %}
+        <p>The following email addresses are associated with your account:</p>
+        <form action="/accounts/email/" method="post" class="email_list">
+            {% csrf_token %}
+            <fieldset class="blockLabels">
+                {% for email in emailaddresses %}
+                    <div class="ctrlHolder">
+                        <label for="email_radio_{{ forloop.counter }}" class="">
+                            <input id="email_radio_{{ forloop.counter }}" type="radio" name="email" {% if email.primary %}checked{% endif %} value="{{ email.email }}">
+                            {{ email.email }}
+                            {% if email.verified %}
+                                <span class="verified">Verified</span>
+                            {% else %}
+                                <span class="unverified">Unverified</span>
+                            {% endif %}
+                            {% if email.primary %}
+                                <span class="primary">Primary</span>
+                            {% endif %}
+                        </label>
+                    </div>
+                {% endfor %}
+                <div class="buttonHolder">
+                    <button class="secondaryAction" type="submit" name="action_primary">Make Primary</button>
+                    <button class="secondaryAction" type="submit" name="action_send">Re-send Verification</button>
+                    <button class="primaryAction" type="submit" name="action_remove">Remove</button>
+                </div>
+            </fieldset>
+        </form>
+    {% else %}
+        <p>No email addresses associated with your account.</p>
+    {% endif %}
+    <h2>Add Email Address</h2>
+    <form method="post" action="/accounts/email/" class="add_email">
+        {% csrf_token %}
+        <p>
+            <label for="id_email">Email:</label>
+            <input type="email" name="email" placeholder="Email address" required id="id_email">
+        </p>
+        <button name="action_add" type="submit">Add Email</button>
+    </form>
+{% endblock content %}

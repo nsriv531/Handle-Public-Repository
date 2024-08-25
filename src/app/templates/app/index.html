@@ -1,0 +1,38 @@
+<!-- First page displayed : directs studios to their signup. -->
+{% extends "account/base.html" %}
+{% block content %}
+
+<!-- Demo of Index Information -->
+<div>
+    <h1>Welcome to Handle</h1>
+    <h2>Manage your Studio</h2>
+        <p>
+        Run your studio like a pro and grow your ceramics business by providing
+        easy access to ... for your members!
+        </p>
+
+    <h2>Become a Member</h2>
+        <p>
+        Join your favorite ceramic studios, sign up and log into a studio's portal to be
+        given unique options ...
+        </p>
+</div>
+
+<!-- Loop through studios and provide login/signup routes. -->
+<div>   {% if studios %}
+            <p><strong>AVAILABLE STUDIOS</strong></p>
+            <ul style="padding-left: 40px;">
+                {% for studio in studios %}
+                    <li>
+                        <p>{{ studio.name }}:
+                            <a href="{% url 'login_portal' studio_url_extension=studio.url_extension %}">Login</a>
+                            <a href="{% url 'member_signup' studio_url_extension=studio.url_extension %}">Sign Up</a></p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p><strong>No Available Studios:</strong></p>
+            <p>Create a studio so that members can start signing up!</p>
+        {% endif %}
+</div>
+{% endblock %}

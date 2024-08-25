@@ -1,0 +1,23 @@
+<!-- Displays the login form for registered studios -->
+{% block content %}
+<strong>Menu:</strong>
+<ul>
+  <li><a href="{% url 'index'%}">Handle</a></li> <!-- Delete Later -->
+  <li><a href="{% url 'member_signup' studio_url_extension=request.resolver_match.kwargs.studio_url_extension%}">Member Sign Up</a></li>
+</ul>
+
+<!--
+  Can display information based on the StudioInfo Model.
+  By collecting information and storing it in the StudioInfo model we could add Bio's, colours, logos later on here as well.
+-->
+  <h2>Login: {{ studio.name }}</h2>
+  <p>{{studio.bio}}</p>
+  <form method="post"action="{% url 'login_portal' studio_url_extension=request.resolver_match.kwargs.studio_url_extension %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+  </form>
+
+  <p><a href="{% url 'account_reset_password' %}">Account Recovery</a></p>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+<!-- Dynamic home page for members to later interact with studios. -->
+{% extends "member_suite/base.html" %}
+{% block content %}
+
+
+<h1>Book a Kiln</h1>
+{% for day, timeslots_info in upcoming_timeslots.items %}
+    {% if timeslots_info %}
+        {{ day|date:"M. d, Y" }}
+        <ul>
+            {% for timeslot_info in timeslots_info %}
+                <li>{{ timeslot_info.timeslot.kiln }}: {{ timeslot_info.timeslot.load_after_time }} ({{ timeslot_info.timeslot.min_role_required }})</li>
+                {% if timeslot_info.is_booked %}
+                    <button type="button" disabled>Taken</button>
+                {% else %}
+                    <form method="post" action="{% url 'book_a_kiln' studio_url_extension=studio_url_extension %}">
+                        {% csrf_token %}
+                        {{ timeslot_info.booking_form.as_p }}
+                        <button type="submit">Book</button>
+                    </form>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endfor %}
+</br>
+
+<h1>Your Bookings</h1>
+{% if users_bookings %}
+    {% for booking in users_bookings %}
+    <ul>
+        <li>
+            {{booking.booking_date}} - {{booking.timeslot.kiln}}
+            <form method="post" action="{% url 'book_a_kiln' studio_url_extension=studio_url_extension %}">
+                {% csrf_token %}
+                {{ booking.unbook_form.as_p }}
+                <button type="submit">Unbook</button>
+        </li>
+    </ul>
+    {% endfor %}
+{% else %}
+    <p>You have no booked timeslots</p>
+{% endif %}
+{% endblock %}

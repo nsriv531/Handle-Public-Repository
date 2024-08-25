@@ -1,0 +1,48 @@
+<!-- Base remplate for account URL's. -->
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block head_title %}{% endblock head_title %}</title>
+    {% block extra_head %}
+    {% endblock extra_head %}
+  </head>
+  <body>
+    {% block body %}
+
+    {% if messages %}
+    <div>
+      <strong>Messages:</strong>
+      <ul>
+        {% for message in messages %}
+        <li>{{message}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div>
+      <p>Username: {{user.username}}</p>
+      <strong>Menu:</strong>
+      <ul>
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a></li>
+          <li><a href="{% url 'user_profile' %}">Profile</a></li>
+          <li><a href="{% url 'member_home' studio_url_extension=studio_url_extension %}">Member Home</a></li>
+          <li><a href="{% url 'studio_home' studio_url_extension=studio_url_extension %}">Studio Home</a></li>
+          <li><a href="{% url 'update_studio_info' studio_url_extension=studio_url_extension %}">Studio Info</a></li>
+          <li><a href="{% url 'kiln_management' studio_url_extension=studio_url_extension %}">Kiln Management</a></li>
+          <li><a href="{% url 'member_management' studio_url_extension=studio_url_extension %}">Member Management</a></li>
+          <li><a href="{% url 'timeslot_management' studio_url_extension=studio_url_extension %}">Timeslot Management</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    {% block content %}
+    {% endblock content %}
+    {% endblock body %}
+    {% block extra_body %}
+    {% endblock extra_body %}
+  </body>
+</html>

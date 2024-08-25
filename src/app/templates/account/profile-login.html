@@ -1,0 +1,38 @@
+<!-- Displays the login form for registered studios -->
+{% block content %}
+<strong>Menu:</strong>
+<ul>
+  <li><a href="{% url 'index'%}">Handle</a></li> <!-- Delete Later -->
+</ul>
+
+<!--
+ This login page will allow users to go to their profile.
+ Their profile should contain information regarding what
+ studio's they own and what studio's theyre a member of.
+
+ This is important because if a studio loses their unique
+ login link or route, this will provide them a way back in
+ without needing to email staff or without just giving up
+ and switching services.
+
+ This also provides a way for users to hop between studios
+ should they want to, or if they forget a studios login link
+ they can just login to their profile and route themselves
+ to the correct studio.
+
+ Since profiles are universal we want to convey that changing
+ their profile information will change it for all studios and
+ by not directly linking their profile to studios this will
+ achieve that message.
+-->
+  <h2>Login to your Handle Profile</h2>
+  <p>{{studio.bio}}</p>
+  <form method="post"action="{% url 'account_login'%}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+  </form>
+
+  <p><a href="{% url 'account_reset_password' %}">Account Recovery</a></p>
+
+{% endblock %}
